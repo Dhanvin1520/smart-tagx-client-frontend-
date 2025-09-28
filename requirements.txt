@@ -1,0 +1,4 @@
+# NOTE: Backend dependencies and spaCy model are defined in backend/requirements.txt
+# This root file is kept minimal to avoid duplicate/conflicting pins.
+fastapi==0.104.1
+uvicorn[standard]==0.24.0

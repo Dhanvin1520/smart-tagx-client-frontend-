@@ -1,0 +1,17 @@
+services:
+  # Backend API Service
+  - type: web
+    name: smarttagx-backend
+    env: docker
+    plan: free
+    dockerfile: Dockerfile
+    buildCommand: ""  # Required by Render but will be ignored when using dockerfile
+    startCommand: ""  # Required by Render but will be ignored when using dockerfile
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ALLOW_ORIGINS
+        value: "http://localhost:5173"
+      - key: ALLOW_ORIGINS_REGEX
+        value: "https://.*.vercel.app"
+    healthCheckPath: /health
