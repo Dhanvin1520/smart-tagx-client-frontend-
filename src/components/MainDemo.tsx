@@ -462,9 +462,8 @@ export const MainDemo: React.FC = () => {
   };
 
   const exampleTexts = [
-    "Today, Aurobindo Pharma has evolved into a knowledge-driven company manufacturing active pharmaceutical ingredients and formulation products. It has a strong R&D focus and has a multi-product portfolio with manufacturing facilities in several countries. We remain committed to healthier life.",
-    "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!",
-    "Tesla's latest electric vehicle features cutting-edge autonomous driving technology. Elon Musk revealed the specifications at the Bangalore launch event in Koramangala. Order now to be among the first owners!"
+    "Thoughtiv is a digital transformation and software development agency delivering custom solutions—web, mobile, SaaS, IT consulting, and cybersecurity—that empower global clients to innovate, grow, and enhance efficiency. With cutting-edge technologies and a client-focused approach, we drive measurable results and a smarter, interconnected future. Head office: Hyderabad, India.",
+    "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!"
   ];
 
   return (
@@ -683,9 +682,7 @@ export const MainDemo: React.FC = () => {
               {loading && (
                 <div className="flex flex-col items-center justify-center py-20">
                   <div className="relative">
-                    <div className="relative bg-slate-900 p-4 rounded-full">
-                      <img src="/logos/Smarttagx.png" alt="Smarttagx" className="h-12 w-auto object-contain opacity-90 animate-smarttagx-bounce" />
-                    </div>
+                    <img src="/logos/Smarttagx.png" alt="Smarttagx" className="h-12 w-auto object-contain opacity-90 animate-smarttagx-bounce rounded-md" />
                   </div>
                   <p className="text-gray-700 mt-6 text-lg font-medium">Smarttagx is analysing your content...</p>
                   <p className="text-gray-500 mt-2">This may take a few seconds</p>

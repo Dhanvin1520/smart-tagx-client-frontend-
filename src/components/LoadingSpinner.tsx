@@ -6,7 +6,7 @@ export const LoadingSpinner: React.FC = () => {
       <img
         src="/logos/Smarttagx.png"
         alt="Smarttagx"
-        className="h-5 w-auto opacity-90 animate-smarttagx-bounce object-contain"
+        className="h-5 w-auto object-contain opacity-90 rounded-lg animate-smarttagx-bounce"
       />
     </div>
   );
