@@ -4,7 +4,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { usageApi } from '../services/authApi';
 import { useNavigate } from 'react-router-dom';
-import { Brain, Sparkles, FileText, Zap, Target, Globe, ArrowRight, Copy, CheckSquare, Square, AlertCircle, Star, Crown, User } from 'lucide-react';
+import { Sparkles, FileText, Zap, Target, Globe, ArrowRight, Copy, CheckSquare, Square, AlertCircle, Star, Crown, User } from 'lucide-react';
 
 interface TagResponse {
   tags: string[];
@@ -683,11 +683,11 @@ export const MainDemo: React.FC = () => {
               {loading && (
                 <div className="flex flex-col items-center justify-center py-20">
                   <div className="relative">
-                    <div className="relative bg-slate-900 p-4 rounded-full animate-pulse">
-                      <Brain className="w-12 h-12 text-white" />
+                    <div className="relative bg-slate-900 p-4 rounded-full">
+                      <img src="/logos/Smarttagx.png" alt="Smarttagx" className="h-12 w-auto object-contain opacity-90 animate-smarttagx-bounce" />
                     </div>
                   </div>
-                  <p className="text-gray-700 mt-6 text-lg font-medium">AI is analyzing your content...</p>
+                  <p className="text-gray-700 mt-6 text-lg font-medium">Smarttagx is analysing your content...</p>
                   <p className="text-gray-500 mt-2">This may take a few seconds</p>
                 </div>
               )}
@@ -851,7 +851,7 @@ export const MainDemo: React.FC = () => {
             {/* Tag Legend */}
             <div className="bg-slate-50 rounded-3xl shadow-xl p-8 border border-slate-200">
               <div className="flex items-center space-x-3 mb-4">
-                <Brain className="w-7 h-7 text-slate-700" />
+                <Sparkles className="w-7 h-7 text-slate-700" />
                 <h3 className="text-xl font-bold text-gray-900">SmartTagX Categories</h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-4">

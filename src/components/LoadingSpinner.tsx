@@ -2,10 +2,12 @@ import React from 'react';
 
 export const LoadingSpinner: React.FC = () => {
   return (
-    <div className="flex items-center justify-center space-x-2">
-      <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"></div>
-      <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-      <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+    <div className="flex items-center justify-center">
+      <img
+        src="/logos/Smarttagx.png"
+        alt="Smarttagx"
+        className="h-5 w-auto opacity-90 animate-smarttagx-bounce object-contain"
+      />
     </div>
   );
 };
