@@ -119,7 +119,7 @@ export const MainDemo: React.FC = () => {
       if (baseLinkUrl.trim()) {
         const next: Record<string, string> = {};
         for (const t of generatedTags) {
-          next[t] = buildDefaultUrl(baseLinkUrl, t);
+          next[t] = buildDefaultUrl(baseLinkUrl);
         }
         setTagLinks(next);
       }
@@ -149,45 +149,13 @@ export const MainDemo: React.FC = () => {
     setSelectedTags(new Set());
   };
 
-
-  const legacyHtmlCopy = (html: string, plain: string) => {
-    // Create a hidden, offscreen contenteditable element to copy rich HTML
-    const el = document.createElement('div');
-    el.setAttribute('contenteditable', 'true');
-    el.style.position = 'fixed';
-    el.style.left = '-9999px';
-    el.style.top = '0';
-    el.innerHTML = html;
-    document.body.appendChild(el);
-
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    const sel = window.getSelection();
-    sel?.removeAllRanges();
-    sel?.addRange(range);
-
-    let ok = false;
-    try {
-      ok = document.execCommand('copy');
-    } catch (_) {
-      ok = false;
-    }
-
-    // Cleanup
-    sel?.removeAllRanges();
-    document.body.removeChild(el);
-
-    // Fallback to plain text if execCommand failed
-    if (!ok) {
-      return navigator.clipboard.writeText(plain);
-    }
-    return Promise.resolve();
-  };
-
-  const copyHtmlToClipboard = (html: string, plain: string) => {
+  const copyHtmlToClipboard = (html: string) => {
     // Create a temporary container with the HTML content
     const container = document.createElement('div');
     container.innerHTML = html;
+    // Improve copy reliability across browsers
+    // Mark as editable so rich content selection/copy works consistently
+    container.setAttribute('contenteditable', 'true');
     
     // Add the container to the DOM (but keep it hidden)
     container.style.position = 'fixed';
@@ -197,7 +165,9 @@ export const MainDemo: React.FC = () => {
     
     // Select the content
     const range = document.createRange();
-    range.selectNode(container);
+    // Select the container's CONTENTS, not the container element itself
+    // This avoids browsers copying only a partial/outer node
+    range.selectNodeContents(container);
     const selection = window.getSelection();
     selection?.removeAllRanges();
     selection?.addRange(range);
@@ -239,7 +209,7 @@ export const MainDemo: React.FC = () => {
       }
       
       // Fallback to execCommand
-      const success = copyHtmlToClipboard(html, plain);
+      const success = copyHtmlToClipboard(html);
       
       if (success) {
         setCopySuccess('Copied!');
@@ -274,59 +244,22 @@ export const MainDemo: React.FC = () => {
     } else {
       // Rich text format - each tag on a new line
       const plain = selected.join('\n');
-      const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>SmartTagX Tags</title>
-            <style>
-              body { 
-                font-family: Arial, sans-serif; 
-                line-height: 1.8;
-                margin: 0;
-                padding: 10px;
-              }
-              a, span { 
-                display: block;
-                padding: 4px 0;
-                color: #2563eb;
-                text-decoration: none;
-              }
-              a:hover { 
-                text-decoration: underline; 
-              }
-              .tag {
-                white-space: nowrap;
-              }
-            </style>
-          </head>
-          <body>
-            ${selected
-              .map(tag => {
-                const url = tagLinks[tag];
-                return url 
-                  ? `<a href="${url}" class="tag">${tag}</a>`
-                  : `<span class="tag">${tag}</span>`;
-              })
-              .join('\n')}
-          </body>
-        </html>`;
-      
+      // Build an HTML fragment (list of anchors/spans) for more reliable clipboard behavior
+      const html = selected
+        .map(tag => {
+          const url = tagLinks[tag];
+          return url
+            ? `<a href="${url}" style="display:block;padding:4px 0;color:#2563eb;text-decoration:none;white-space:nowrap">${tag}</a>`
+            : `<span style="display:block;padding:4px 0;white-space:nowrap">${tag}</span>`;
+        })
+        .join('\n');
       await copyWithHtmlFallback(plain, html);
     }
     
     setTimeout(() => setCopySuccess(''), 2000);
   };
 
-  const formatForWhatsApp = (tags: string[]) => {
-    return tags
-      .map(tag => {
-        const url = tagLinks[tag];
-        return url ? `${tag}\n${url}` : tag;
-      })
-      .join('\n\n'); // Double newline for better separation
-  };
+  
 
   const copyAllTags = async () => {
     if (copyFormat === 'plain') {
@@ -344,44 +277,15 @@ export const MainDemo: React.FC = () => {
     } else {
       // Rich text format - each tag on a new line
       const plain = tags.join('\n');
-      const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <title>SmartTagX Tags</title>
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              line-height: 1.8;
-              margin: 0;
-              padding: 10px;
-            }
-            a, span { 
-              display: block;
-              padding: 4px 0;
-              color: #2563eb;
-              text-decoration: none;
-            }
-            a:hover { 
-              text-decoration: underline; 
-            }
-            .tag {
-              white-space: nowrap;
-            }
-          </style>
-        </head>
-        <body>
-          ${tags.map(tag => {
-            const url = tagLinks[tag];
-            return url 
-              ? `<a href="${url}" class="tag">${tag}</a>`
-              : `<span class="tag">${tag}</span>`;
-          }).join('\n')}
-        </body>
-        </html>
-      `;
-      
+      // Build an HTML fragment (list of anchors/spans) for more reliable clipboard behavior
+      const html = tags
+        .map(tag => {
+          const url = tagLinks[tag];
+          return url
+            ? `<a href="${url}" style=\"display:block;padding:4px 0;color:#2563eb;text-decoration:none;white-space:nowrap\">${tag}</a>`
+            : `<span style=\"display:block;padding:4px 0;white-space:nowrap\">${tag}</span>`;
+        })
+        .join('\n');
       await copyWithHtmlFallback(plain, html);
     }
     
@@ -389,10 +293,17 @@ export const MainDemo: React.FC = () => {
   };
 
   // ----- Tag hyperlink helpers -----
-  const buildDefaultUrl = (base: string, tag: string) => {
-    const clean = base.replace(/\/+$/, '');
-    const q = encodeURIComponent(tag);
-    return `${clean}?q=${q}`;
+  const ensureProtocol = (url: string) => {
+    const u = url.trim();
+    if (!u) return '';
+    if (/^https?:\/\//i.test(u)) return u;
+    return `https://${u}`;
+  };
+
+  const buildDefaultUrl = (base: string) => {
+    const withProto = ensureProtocol(base);
+    const clean = withProto.replace(/\/+$/, '');
+    return clean; // always exact URL without query params
   };
 
   const applyBaseUrlToAll = () => {
@@ -400,13 +311,14 @@ export const MainDemo: React.FC = () => {
     if (!base) return;
     const next: Record<string, string> = {};
     for (const t of tags) {
-      next[t] = buildDefaultUrl(base, t);
+      next[t] = buildDefaultUrl(base);
     }
     setTagLinks(next);
   };
 
   const setIndividualLink = (tag: string, url: string) => {
-    setTagLinks(prev => ({ ...prev, [tag]: url }));
+    const normalized = ensureProtocol(url);
+    setTagLinks(prev => ({ ...prev, [tag]: normalized }));
   };
 
   const addCustomTag = () => {
@@ -416,7 +328,7 @@ export const MainDemo: React.FC = () => {
       setTags([...tags, t]);
       // If base URL exists, set default link for new tag
       if (baseLinkUrl.trim()) {
-        setTagLinks(prev => ({ ...prev, [t]: buildDefaultUrl(baseLinkUrl, t) }));
+        setTagLinks(prev => ({ ...prev, [t]: buildDefaultUrl(baseLinkUrl) }));
       }
     }
     setCustomTag('');
@@ -462,8 +374,9 @@ export const MainDemo: React.FC = () => {
   };
 
   const exampleTexts = [
-    "Thoughtiv is a digital transformation and software development agency delivering custom solutions—web, mobile, SaaS, IT consulting, and cybersecurity—that empower global clients to innovate, grow, and enhance efficiency. With cutting-edge technologies and a client-focused approach, we drive measurable results and a smarter, interconnected future. Head office: Hyderabad, India.",
-    "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!"
+    "Today, Aurobindo Pharma has evolved into a knowledge-driven company manufacturing active pharmaceutical ingredients and formulation products. It has a strong R&D focus and has a multi-product portfolio with manufacturing facilities in several countries. We remain committed to healthier life.",
+    "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!",
+    "Tesla's latest electric vehicle features cutting-edge autonomous driving technology. Elon Musk revealed the specifications at the Bangalore launch event in Koramangala. Order now to be among the first owners!"
   ];
 
   return (
@@ -656,7 +569,7 @@ export const MainDemo: React.FC = () => {
                   <div className="flex gap-3 w-full">
                     <input
                       type="url"
-                      placeholder="https://example.com/search"
+                      placeholder="instagram.com or https://example.com"
                       value={baseLinkUrl}
                       onChange={(e) => setBaseLinkUrl(e.target.value)}
                       className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
@@ -670,7 +583,7 @@ export const MainDemo: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">We link tags using <code>?q=tag</code>. Edit any tag's URL via the link icon.</p>
+                <p className="text-xs text-slate-500 mt-2">We will use the exact base URL you provide (e.g., https://instagram.com). Edit any tag's URL via the link icon.</p>
               </div>
 
               {error && (
