@@ -372,11 +372,10 @@ export const MainDemo: React.FC = () => {
       generateTags();
     }
   };
-
   const exampleTexts = [
-    "Today, Aurobindo Pharma has evolved into a knowledge-driven company manufacturing active pharmaceutical ingredients and formulation products. It has a strong R&D focus and has a multi-product portfolio with manufacturing facilities in several countries. We remain committed to healthier life.",
     "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!",
-    "Tesla's latest electric vehicle features cutting-edge autonomous driving technology. Elon Musk revealed the specifications at the Bangalore launch event in Koramangala. Order now to be among the first owners!"
+    "Tesla's latest electric vehicle features cutting-edge autonomous driving technology. Elon Musk revealed the specifications at the Bangalore launch event in Koramangala. Order now to be among the first owners!",
+    "We are Thoughtiv. A cutting-edge software development and digital transformation agency based in India, empowering businesses across industries. We focus on delivering measurable value, transforming ideas into successful solutions that drive growth and enhance efficiency. Our expertise spans website and software development, mobile app solutions, and end-to-end digital transformation services. Visit us at head office: Hyderabad. Our Other Offices: London, United Kingdom | New Jersey, USA"
   ];
 
   return (
@@ -384,19 +383,24 @@ export const MainDemo: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Disclaimer (highlighted in red) */}
         <div className="mb-8 rounded-2xl border-2 border-red-400 bg-red-100 p-5 text-red-900 shadow-sm">
-          <div className="flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 mt-0.5 text-red-700" />
-            <div>
-              <div className="font-semibold mb-1 text-red-900">Disclaimer</div>
-              <p className="text-sm leading-relaxed">SmartTagX may occasionally err. Please review and edit generated tags before use.</p>
-            </div>
-          </div>
+        <div className="flex flex-col items-center text-center gap-2">
+  {/* Icon and heading inline */}
+  <div className="flex items-center gap-2">
+    <AlertCircle className="w-5 h-5 text-red-700" />
+    <div className="font-semibold text-red-900 text-lg">Disclaimer</div>
+  </div>
+
+  {/* Paragraph */}
+  <p className="text-base leading-relaxed text-red-800 max-w-md">
+    SmartTagX may occasionally err. Please review and edit generated tags before use.
+  </p>
+</div>
         </div>
 
         {/* Section Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-slate-800 p-4 rounded-xl shadow-lg">
+            <div >
               <img src="/logos/Smarttagx.png" alt="SmartTagX Logo" className="h-12 w-auto" />
             </div>
           </div>
@@ -493,7 +497,7 @@ export const MainDemo: React.FC = () => {
               <div className="flex items-center justify-between mt-6">
                 <span className="text-sm text-gray-500 flex items-center gap-2">
                   <Globe className="w-4 h-4" />
-                  {inputText.length} characters • Press Ctrl+Enter to analyze
+                  {inputText.length} 
                 </span>
                 <button
                   onClick={generateTags}
@@ -502,7 +506,7 @@ export const MainDemo: React.FC = () => {
                 >
                   {loading ? (
                     <>
-                      <LoadingSpinner />
+           
                       <span>Analyzing...</span>
                     </>
                   ) : isAuthenticated && !canGenerateTags() ? (
@@ -569,7 +573,7 @@ export const MainDemo: React.FC = () => {
                   <div className="flex gap-3 w-full">
                     <input
                       type="url"
-                      placeholder="instagram.com or https://example.com"
+                      placeholder=" https://example.com"
                       value={baseLinkUrl}
                       onChange={(e) => setBaseLinkUrl(e.target.value)}
                       className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
@@ -583,7 +587,7 @@ export const MainDemo: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">We will use the exact base URL you provide (e.g., https://instagram.com). Edit any tag's URL via the link icon.</p>
+                <p className="text-xs text-slate-500 mt-2">We will use the exact base URL you provide (e.g., https://example.com). Edit any tag's URL via the link icon.</p>
               </div>
 
               {error && (
@@ -745,16 +749,20 @@ export const MainDemo: React.FC = () => {
               )}
 
               {!loading && tags.length === 0 && !error && (
-                <div className="text-center py-20">
-                  <div className="relative mb-6">
-                    <div className="relative bg-slate-900 p-6 rounded-full mx-auto w-fit">
-                      <Sparkles className="w-16 h-16 text-white" />
-                    </div>
-                  </div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">Ready to transform your content?</h4>
-                  <p className="text-gray-600 mb-4">Enter some text above and click "Generate Tags"</p>
-                  <p className="text-sm text-gray-500">You can edit tags to better fit your needs</p>
+              <div className="text-center py-20">
+              <div className="relative mb-6">
+                <div className="relative bg-slate-900 p-6 rounded-full mx-auto w-fit">
+                  <img 
+                    src="/logos/smartagx2.png" 
+                    alt="SmartTagX Logo" 
+                    className="w-16 h-16 object-contain" 
+                  />
                 </div>
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-2">Ready to transform your content?</h4>
+              <p className="text-gray-600 mb-4">Enter some text above and click "Generate Tags"</p>
+              <p className="text-sm text-gray-500">You can edit tags to better fit your needs</p>
+            </div>
               )}
             </div>
 
@@ -801,7 +809,6 @@ export const MainDemo: React.FC = () => {
               <div className="bg-white/70 border border-slate-200 rounded-xl p-4 text-sm text-slate-700">
                 <p className="font-semibold mb-1">Disclaimer</p>
                 <p>
-                  SmartTagX uses a lightweight, CPU‑friendly NLP pipeline. While it strives for high accuracy,
                   some tags may need human review. Please edit, add, or remove tags above to ensure they match your intent.
                 </p>
               </div>

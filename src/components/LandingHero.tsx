@@ -7,9 +7,10 @@ export const LandingHero = () => {
       <div className="relative max-w-5xl mx-auto px-6 py-20 text-center">
         {/* Badge */}
         <div className="inline-flex items-center px-4 py-2 bg-primary-100 rounded-full border border-primary-200 mb-8">
-          <img src="/logos/Smarttagx.png" alt="SmartTagX Logo" className="h-5 w-auto mr-2" />
-          <span className="text-sm font-medium text-primary-800">SmartTagX AI — The Future of Intelligent Content Tagging</span>
-        </div>
+  <span className="text-sm font-medium text-primary-800">
+    SmartTagX AI — The Future of Intelligent Content Tagging
+  </span>
+</div>
 
         {/* Main Headline */}
         <h1 className="text-5xl md:text-6xl font-bold text-secondary-900 mb-6 leading-tight">
@@ -61,7 +62,7 @@ export const LandingHero = () => {
             <div className="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-xl mx-auto mb-4">
               <Sparkles className="w-6 h-6 text-primary-700" />
             </div>
-            <div className="text-3xl font-bold text-secondary-900 mb-2">50+</div>
+            <div className="text-3xl font-bold text-secondary-900 mb-2">8+</div>
             <div className="text-secondary-600">Tag Categories</div>
           </div>
         </div>

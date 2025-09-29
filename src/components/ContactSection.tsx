@@ -1,4 +1,4 @@
-import { Mail, Phone, MessageCircle } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 export const ContactSection = () => {
   return (
@@ -7,15 +7,17 @@ export const ContactSection = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center px-4 py-2 bg-primary-100 rounded-full border border-primary-200 mb-6">
-            <MessageCircle className="w-4 h-4 text-primary-700 mr-2" />
+            <Mail className="w-4 h-4 text-primary-700 mr-2" />
             <span className="text-sm font-medium text-secondary-700">Contact Us</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-secondary-900 mb-4">Get in touch</h2>
-          <p className="text-lg text-secondary-600">We'd love to hear from you. Reach out using the details below.</p>
+          <p className="text-lg text-secondary-600">
+            We'd love to hear from you. Reach out using the details below.
+          </p>
         </div>
 
-        {/* Contact Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Email Contact */}
+        <div className="max-w-md mx-auto">
           <div className="border border-secondary-200 rounded-2xl p-6 bg-white">
             <div className="flex items-start">
               <div className="bg-primary-600 p-3 rounded-xl mr-4">
@@ -25,19 +27,6 @@ export const ContactSection = () => {
                 <h4 className="text-secondary-900 font-semibold mb-1">Email</h4>
                 <p className="text-secondary-700">hello@smarttagx.com</p>
                 <p className="text-secondary-500 text-sm">We'll respond within 24 hours</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border border-secondary-200 rounded-2xl p-6 bg-white">
-            <div className="flex items-start">
-              <div className="bg-primary-600 p-3 rounded-xl mr-4">
-                <Phone className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h4 className="text-secondary-900 font-semibold mb-1">Phone</h4>
-                <p className="text-secondary-700">+1 (555) 123-4567</p>
-                <p className="text-secondary-500 text-sm">Mon–Fri, 9AM–6PM PST</p>
               </div>
             </div>
           </div>
