@@ -374,7 +374,6 @@ export const MainDemo: React.FC = () => {
   };
   const exampleTexts = [
     "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!",
-    "Tesla's latest electric vehicle features cutting-edge autonomous driving technology. Elon Musk revealed the specifications at the Bangalore launch event in Koramangala. Order now to be among the first owners!",
     "We are Thoughtiv. A cutting-edge software development and digital transformation agency based in India, empowering businesses across industries. We focus on delivering measurable value, transforming ideas into successful solutions that drive growth and enhance efficiency. Our expertise spans website and software development, mobile app solutions, and end-to-end digital transformation services. Visit us at head office: Hyderabad. Our Other Offices: London, United Kingdom | New Jersey, USA"
   ];
 
