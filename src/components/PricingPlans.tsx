@@ -227,7 +227,7 @@ const PricingPlans = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                     <div className="mb-4">
                       <span className="text-4xl font-bold text-gray-900">{plan.price === 0 ? '₹0' : `₹${plan.price}`}</span>
-                      <span className="text-gray-600">/{plan.period}</span>
+                      <span className="text-gray-600">/{plan.period.charAt(0).toUpperCase() + plan.period.slice(1)}</span>
                     </div>
                     <p className="text-gray-600 mb-2">{plan.limits.requests}</p>
                     {plan.description && (

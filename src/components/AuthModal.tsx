@@ -128,8 +128,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm sm:max-w-md mx-auto overflow-y-auto max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -144,25 +144,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {/* Success Message */}
           {successMessage && (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            <div className="bg-green-50 border border-green-200 text-green-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm">
               {successMessage}
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="text-red-500 text-sm mb-4 p-2 bg-red-50 border border-red-100 rounded flex items-start">
+            <div className="text-red-500 text-sm mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-100 rounded flex items-start">
               <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-              <span>{error}</span>
+              <span className="break-words">{error}</span>
             </div>
           )}
 
           {/* Suggest signup if account not found on login */}
           {mode === 'login' && error && /not\s*found|no\s*account|user\s*not\s*found/i.test(error) && (
-            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-800 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm">
               Account not created. Please sign up first.
               <button
                 type="button"
@@ -188,7 +188,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                   value={formData.name}
                   onChange={handleInputChange}
                   required={mode === 'register'}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -208,8 +208,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 placeholder="Enter your email"
+                autoComplete="email"
               />
             </div>
           </div>
@@ -227,8 +228,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-12 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 placeholder="Enter your password"
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               />
               <button
                 type="button"
@@ -254,8 +256,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   required={mode === 'register'}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="Confirm your password"
+                  autoComplete="new-password"
                 />
               </div>
             </div>
@@ -265,11 +268,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-sm sm:text-base font-medium"
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                <Loader2 className="w-4 sm:w-5 h-4 sm:h-5 mr-2 animate-spin" />
                 Please wait...
               </>
             ) : (mode === 'login' ? 'Sign In' : 'Create Account')}
@@ -277,7 +280,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
           {/* Switch Mode */}
           <div className="text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base">
               {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}
               <button
                 type="button"
@@ -291,15 +294,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
           {/* Forgot Password */}
           {mode === 'login' && (
-            <div className="pt-2 border-t">
-              <div className="text-sm text-gray-700 mb-2">Forgot your password?</div>
-              <div className="flex gap-2">
+            <div className="pt-3 sm:pt-4 border-t">
+              <div className="text-sm text-gray-700 mb-2 font-medium">Forgot your password?</div>
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   placeholder="Enter your account email"
-                  className="flex-1 border rounded-lg px-3 py-2"
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoComplete="email"
                 />
                 <button
                   type="button"
@@ -329,13 +333,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                 >
                   {forgotLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />
                       Sending...
                     </>
                   ) : 'Send reset link'}
                 </button>
               </div>
-              {forgotMessage && <div className="text-xs text-gray-600 mt-2">{forgotMessage}</div>}
+              {forgotMessage && (
+                <div className="text-xs sm:text-sm text-gray-600 mt-2 px-1 break-words">
+                  {forgotMessage}
+                </div>
+              )}
             </div>
           )}
         </form>

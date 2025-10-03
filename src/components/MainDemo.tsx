@@ -144,7 +144,7 @@ export const MainDemo: React.FC = () => {
   const selectAllTags = () => {
     setSelectedTags(new Set(tags));
   };
-
+  
   const deselectAllTags = () => {
     setSelectedTags(new Set());
   };
@@ -624,33 +624,31 @@ export const MainDemo: React.FC = () => {
 
                   {/* Tag Selection Controls */}
                   <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-                    <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                       <div className="flex flex-wrap items-center gap-3">
                         <button
                           onClick={selectAllTags}
-                          className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium flex items-center gap-1.5"
                         >
                           <CheckSquare className="w-4 h-4" />
-                          <span className="hidden sm:inline">Select All</span>
-                          <span className="sm:hidden">All</span>
+                          <span>Select All</span>
                         </button>
                         <button
                           onClick={deselectAllTags}
-                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium flex items-center gap-1.5"
                         >
                           <Square className="w-4 h-4" />
-                          <span className="hidden sm:inline">Deselect All</span>
-                          <span className="sm:hidden">None</span>
+                          <span>Deselect All</span>
                         </button>
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div className="flex flex-col gap-3">
                           {/* Format Toggle */}
-                          <div className="flex items-center gap-2 sm:gap-4 text-sm">
+                          <div className="flex flex-wrap items-center gap-2 text-sm">
                             <span className="text-gray-600 whitespace-nowrap">Copy as:</span>
-                            <div className="flex gap-2 flex-wrap">
-                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm">
+                            <div className="flex flex-wrap gap-2">
+                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg">
                                 <input
                                   type="radio"
                                   name="copyFormat"
@@ -660,7 +658,7 @@ export const MainDemo: React.FC = () => {
                                 />
                                 Rich
                               </label>
-                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm">
+                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg">
                                 <input
                                   type="radio"
                                   name="copyFormat"
@@ -670,7 +668,7 @@ export const MainDemo: React.FC = () => {
                                 />
                                 WhatsApp
                               </label>
-                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm">
+                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg">
                                 <input
                                   type="radio"
                                   name="copyFormat"
@@ -684,15 +682,14 @@ export const MainDemo: React.FC = () => {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2 mt-2">
                             <button
                               onClick={copySelectedTags}
                               disabled={selectedTags.size === 0}
                               className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                             >
                               <Copy className="w-4 h-4" />
-                              <span className="hidden sm:inline">Copy ({selectedTags.size})</span>
-                              <span className="sm:hidden">Copy</span>
+                              <span>Copy ({selectedTags.size})</span>
                             </button>
                             <button
                               onClick={copyAllTags}
@@ -700,8 +697,7 @@ export const MainDemo: React.FC = () => {
                               className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                             >
                               <Copy className="w-4 h-4" />
-                              <span className="hidden sm:inline">All ({tags.length})</span>
-                              <span className="sm:hidden">All</span>
+                              <span>All ({tags.length})</span>
                             </button>
                           </div>
                         </div>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import { LandingHero } from './components/LandingHero';
 import { MainDemo } from './components/MainDemo';
@@ -21,12 +21,15 @@ import ResetPasswordPage from './components/ResetPasswordPage';
 import SignupSuccessPage from './components/SignupSuccessPage';
 import TermsAndConditions from './components/TermsAndConditions';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import { trackPageView } from './services/analytics';
+import PageTracker from './components/PageTracker';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <ScrollToTop />
+        <PageTracker />
         <div className="min-h-screen bg-white">
           {/* Navigation */}
           <Navigation />

@@ -58,7 +58,7 @@ const Navigation = () => {
 
   return (
     <>
-      <nav className="fixed top-0 w-full bg-background/95 backdrop-blur-sm border-b border-secondary-200 z-50">
+      <nav className="fixed top-0 w-full bg-white md:bg-background/95 backdrop-blur-sm border-b border-secondary-200 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
@@ -140,7 +140,7 @@ const Navigation = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-secondary-600 hover:text-secondary-800 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                className="inline-flex items-center justify-center p-2 rounded-md text-secondary-700 hover:text-secondary-900 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -149,7 +149,7 @@ const Navigation = () => {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <div className="mobile-menu-container md:hidden absolute top-full left-0 right-0 bg-background/98 backdrop-blur-md border-t border-secondary-200 shadow-xl">
+            <div className="mobile-menu-container md:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t border-secondary-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div className="flex flex-col space-y-6">
                   {/* Navigation Links */}

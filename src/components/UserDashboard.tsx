@@ -49,7 +49,7 @@ const UserDashboard: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 overflow-y-auto max-h-[calc(100vh-120px)]">
+    <div className="bg-white rounded-xl shadow-lg p-6 overflow-y-auto max-h-[calc(100vh-120px)] max-h-[80vh] md:max-h-[calc(100vh-120px)]">
       {/* Header */}
       <div className="flex items-start sm:items-center justify-between mb-6 flex-col sm:flex-row gap-4">
         <div className="flex items-center space-x-3 w-full sm:w-auto min-w-0">
@@ -147,9 +147,9 @@ const UserDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* API Usage */}
+      {/* SmartTagX Usage */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">API Usage</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">SmartTagX Usage</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-gray-600">This Month</span>
