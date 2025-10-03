@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { X, Eye, EyeOff, Mail, Lock, User, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -18,17 +19,54 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Check if user just verified their email or reset password
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('verified') === 'true') {
+      const pendingEmail = localStorage.getItem('pendingVerificationEmail');
+      if (pendingEmail) {
+        setMode('login');
+        setFormData(prev => ({ ...prev, email: pendingEmail }));
+        // Clear the URL parameter
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } else if (urlParams.get('reset') === 'true') {
+      const resetEmail = localStorage.getItem('passwordResetEmail');
+      if (resetEmail) {
+        setMode('login');
+        setFormData(prev => ({ ...prev, email: resetEmail }));
+        // Clear the URL parameter
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } else {
+      // Check for email parameter in URL
+      const emailParam = urlParams.get('email');
+      if (emailParam) {
+        setMode('login');
+        setFormData(prev => ({ ...prev, email: emailParam }));
+        // Clear the email parameter from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }, []);
 
   // Keep mode in sync when modal opens with a different initialMode
   useEffect(() => {
     if (isOpen) {
       setMode(initialMode);
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      setSuccessMessage('');
+      setIsLoading(false); // Reset loading state when modal opens
       clearError();
     }
   }, [isOpen, initialMode]);
 
   const { login, register, error, clearError } = useAuth();
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,6 +78,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Don't set loading if fields are empty
+    if (mode === 'login' && (!formData.email || !formData.password)) {
+      return;
+    }
+    
     setIsLoading(true);
     clearError();
 
@@ -52,11 +96,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           throw new Error('Passwords do not match');
         }
         await register(formData.name, formData.email, formData.password);
+        // Store email and password temporarily for auto-login after verification
+        localStorage.setItem('pendingVerificationEmail', formData.email);
+        localStorage.setItem('tempPassword', formData.password);
+        
+        // Close modal and redirect to signup success page
+        setIsLoading(false);
         onClose();
+        window.location.href = '/signup-success';
+        return; // Return early to prevent further processing
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-    } finally {
+      // Error is handled by AuthContext and displayed via useAuth error state
       setIsLoading(false);
     }
   };
@@ -93,10 +145,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Success Message */}
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+              {successMessage}
+            </div>
+          )}
+
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
+            <div className="text-red-500 text-sm mb-4 p-2 bg-red-50 border border-red-100 rounded flex items-start">
+              <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -205,9 +265,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
-            {isLoading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Please wait...
+              </>
+            ) : (mode === 'login' ? 'Sign In' : 'Create Account')}
           </button>
 
           {/* Switch Mode */}
@@ -223,6 +288,56 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
               </button>
             </p>
           </div>
+
+          {/* Forgot Password */}
+          {mode === 'login' && (
+            <div className="pt-2 border-t">
+              <div className="text-sm text-gray-700 mb-2">Forgot your password?</div>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  placeholder="Enter your account email"
+                  className="flex-1 border rounded-lg px-3 py-2"
+                />
+                <button
+                  type="button"
+                  className="px-3 py-2 rounded bg-gray-800 text-white flex items-center justify-center min-w-[120px]"
+                  disabled={forgotLoading}
+                  onClick={async () => {
+                    if (!forgotEmail) return;
+                    setForgotLoading(true);
+                    setForgotMessage('');
+                    try {
+                      // Store email for automatic login after password reset
+                      localStorage.setItem('passwordResetEmail', forgotEmail);
+                      const base = (import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001');
+                      const res = await fetch(`${base.replace(/\/+$/, '')}/api/auth/forgot-password`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: forgotEmail })
+                      });
+                      const data = await res.json();
+                      setForgotMessage(data?.message || 'If that email exists, a reset link has been sent. Please check your inbox and spam folder.');
+                    } catch (e: any) {
+                      setForgotMessage('Failed to send reset link.');
+                    } finally {
+                      setForgotLoading(false);
+                    }
+                  }}
+                >
+                  {forgotLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : 'Send reset link'}
+                </button>
+              </div>
+              {forgotMessage && <div className="text-xs text-gray-600 mt-2">{forgotMessage}</div>}
+            </div>
+          )}
         </form>
       </div>
     </div>

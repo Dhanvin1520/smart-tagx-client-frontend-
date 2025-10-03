@@ -81,7 +81,7 @@ export const HeroSection: React.FC = () => {
               <Sparkles className="w-12 h-12 text-blue-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-blue-300 mb-3">AI-Powered</h3>
               <p className="text-gray-400">
-                NLP that understands meaning, entities, locations, and relationships
+                Model that understands meaning, entities, locations, and relationships
               </p>
             </div>
             

@@ -36,7 +36,7 @@ export const LandingHero = () => {
           </button>
           <button
             className="bg-white/80 backdrop-blur-sm text-secondary-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white transition-all duration-300 border border-secondary-200 hover:border-secondary-300 shadow-sm hover:shadow-md"
-            onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
           >
             Watch Demo
           </button>

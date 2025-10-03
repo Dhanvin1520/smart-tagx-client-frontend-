@@ -1,33 +1,25 @@
-# Use Python 3.11.7 slim base image
-FROM python:3.11.7-slim
+# syntax=docker/dockerfile:1
 
-# Set working directory
+# ---------- Build stage ----------
+FROM node:20-alpine AS build
 WORKDIR /app
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONHASHSEED=random
+COPY package*.json ./
+RUN npm ci
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+COPY . .
 
-# Install Python dependencies (use backend requirements)
-COPY backend/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    python -m spacy download en_core_web_sm
+# Build the Vite app
+RUN npm run build
 
-# Copy backend code
-COPY backend/ ./backend/
+# ---------- Runtime stage (Nginx) ----------
+FROM nginx:1.27-alpine AS runtime
 
-# Set working directory to backend
-WORKDIR /app/backend
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose the port the app runs on
-EXPOSE 8000
+EXPOSE 80
 
-# Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["nginx", "-g", "daemon off;"]
+
+

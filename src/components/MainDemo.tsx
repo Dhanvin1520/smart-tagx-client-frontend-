@@ -82,7 +82,7 @@ export const MainDemo: React.FC = () => {
       return data.tags;
     } catch (error) {
       console.error('Backend API error:', error);
-      throw new Error('Unable to connect to NLP backend. Please ensure the backend server is running.');
+      throw new Error('server error');
     }
   };
 
@@ -382,19 +382,21 @@ export const MainDemo: React.FC = () => {
     <section id="demo" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4">
         {/* Disclaimer (highlighted in red) */}
-        <div className="mb-8 rounded-2xl border-2 border-red-400 bg-red-100 p-5 text-red-900 shadow-sm">
-        <div className="flex flex-col items-center text-center gap-2">
-  {/* Icon and heading inline */}
-  <div className="flex items-center gap-2">
-    <AlertCircle className="w-5 h-5 text-red-700" />
-    <div className="font-semibold text-red-900 text-lg">Disclaimer</div>
-  </div>
+        <div className="mb-8 rounded-2xl border-2 border-red-400 bg-red-100 p-4 sm:p-6 text-red-900 shadow-sm">
+          <div className="flex items-center justify-center min-h-[80px]">
+            <div className="text-center">
+              {/* Icon and heading centered */}
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <AlertCircle className="w-5 h-5 text-red-700" />
+                <div className="font-semibold text-red-900 text-base sm:text-lg">Disclaimer</div>
+              </div>
 
-  {/* Paragraph */}
-  <p className="text-base leading-relaxed text-red-800 max-w-md">
-    SmartTagX may occasionally err. Please review and edit generated tags before use.
-  </p>
-</div>
+              {/* Paragraph centered */}
+              <p className="text-sm sm:text-base leading-relaxed text-red-800 max-w-md mx-auto">
+                SmartTagX may occasionally err. Please review and edit generated tags before use.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Section Header */}
@@ -404,17 +406,17 @@ export const MainDemo: React.FC = () => {
               <img src="/logos/Smarttagx.png" alt="SmartTagX Logo" className="h-12 w-auto" />
             </div>
           </div>
-          <h2 className="text-5xl font-bold text-secondary-900 mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900 mb-6">
             Experience the Future
           </h2>
-          <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-secondary-600 max-w-3xl mx-auto px-4">
             With SmartTagX AI, every piece of content becomes easier to
             understand, search, and connect. It's the future of smart organization — automatic,
             accurate, and effortless.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Input Section */}
           <div className="space-y-8">
             <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 hover:shadow-3xl transition-all duration-300">
@@ -440,34 +442,40 @@ export const MainDemo: React.FC = () => {
               {/* Usage Display */}
               {isAuthenticated && user && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center space-x-3">
                       <div className={`p-2 rounded-lg bg-white ${getPlanInfo().color}`}>
                         {getPlanInfo().icon}
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{getPlanInfo().name} Plan</p>
-                        <p className="text-sm text-gray-600">
-                          {user.apiUsage.requestsThisMonth} / {user.apiUsage.monthlyLimit === -1 ? '∞' : user.apiUsage.monthlyLimit} tags used
-                        </p>
+                        {user.subscription.plan === 'pro' ? (
+                          <p className="text-sm text-gray-600">Unlimited usage</p>
+                        ) : (
+                          <p className="text-sm text-gray-600">
+                            {user.apiUsage.requestsThisMonth} / {user.apiUsage.monthlyLimit === -1 ? '∞' : user.apiUsage.monthlyLimit} tags used
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      {canGenerateTags() ? (
-                        <p className="text-sm text-green-600 font-medium">
-                          {user.apiUsage.monthlyLimit === -1 ? '∞' : getRemainingTags()} tags remaining
-                        </p>
-                      ) : (
-                        <div className="flex items-center space-x-2 text-red-600">
-                          <AlertCircle className="w-4 h-4" />
-                          <p className="text-sm font-medium">Limit reached</p>
-                        </div>
-                      )}
-                    </div>
+                    {user.subscription.plan !== 'pro' && (
+                      <div className="text-left sm:text-right">
+                        {canGenerateTags() ? (
+                          <p className="text-sm text-green-600 font-medium">
+                            {user.apiUsage.monthlyLimit === -1 ? '∞' : getRemainingTags()} tags remaining
+                          </p>
+                        ) : (
+                          <div className="flex items-center space-x-2 text-red-600">
+                            <AlertCircle className="w-4 h-4" />
+                            <p className="text-sm font-medium">Limit reached</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  
-                  {/* Progress Bar */}
-                  {user.apiUsage.monthlyLimit !== -1 && (
+
+                  {/* Progress Bar - Only for non-Pro users */}
+                  {user.subscription.plan !== 'pro' && user.apiUsage.monthlyLimit !== -1 && (
                     <div className="mt-3">
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
@@ -479,8 +487,8 @@ export const MainDemo: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Upgrade Prompt */}
+
+                  {/* Upgrade Prompt - Only for free users who hit limit */}
                   {!canGenerateTags() && user.subscription.plan === 'free' && (
                     <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                       <p className="text-sm text-blue-800 mb-2">You've used all your free tags this month! Upgrade to unlock more.</p>
@@ -494,19 +502,19 @@ export const MainDemo: React.FC = () => {
                 </div>
               )}
               
-              <div className="flex items-center justify-between mt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6">
                 <span className="text-sm text-gray-500 flex items-center gap-2">
                   <Globe className="w-4 h-4" />
-                  {inputText.length} 
+                  <span className="hidden sm:inline">{inputText.length} characters</span>
+                  <span className="sm:hidden">{inputText.length}</span>
                 </span>
                 <button
                   onClick={generateTags}
                   disabled={loading || !inputText.trim() || (isAuthenticated && !canGenerateTags())}
-                  className="group bg-slate-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-900 focus:ring-4 focus:ring-slate-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="w-full sm:w-auto group bg-slate-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-slate-900 focus:ring-4 focus:ring-slate-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   {loading ? (
                     <>
-           
                       <span>Analyzing...</span>
                     </>
                   ) : isAuthenticated && !canGenerateTags() ? (
@@ -568,20 +576,20 @@ export const MainDemo: React.FC = () => {
 
               {/* Base URL controls at top of results */}
               <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 mb-6">
-                <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                  <label className="text-sm text-slate-600">Common URL for all tags</label>
-                  <div className="flex gap-3 w-full">
+                <div className="flex flex-col gap-3">
+                  <label className="text-sm font-medium text-slate-600">Common URL for all tags</label>
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <input
                       type="url"
-                      placeholder=" https://example.com"
+                      placeholder="https://example.com"
                       value={baseLinkUrl}
                       onChange={(e) => setBaseLinkUrl(e.target.value)}
-                      className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                      className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 text-sm"
                     />
                     <button
                       onClick={applyBaseUrlToAll}
                       disabled={!baseLinkUrl.trim() || tags.length === 0}
-                      className="px-4 py-2 bg-black text-white rounded-lg disabled:opacity-50"
+                      className="px-4 py-2 bg-black text-white rounded-lg disabled:opacity-50 text-sm font-medium"
                     >
                       Apply
                     </button>
@@ -616,95 +624,88 @@ export const MainDemo: React.FC = () => {
 
                   {/* Tag Selection Controls */}
                   <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-                    <div className="flex flex-wrap items-center gap-3 mb-4">
-                      <button
-                        onClick={selectAllTags}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
-                      >
-                        <CheckSquare className="w-4 h-4" />
-                        Select All
-                      </button>
-                      <button
-                        onClick={deselectAllTags}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-                      >
-                        <Square className="w-4 h-4" />
-                        Deselect All
-                      </button>
-                      <div className="flex-1"></div>
-                      <div className="mt-4 space-y-3">
-                        {/* Format Toggle */}
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className="text-gray-600">Copy as:</span>
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          onClick={selectAllTags}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                        >
+                          <CheckSquare className="w-4 h-4" />
+                          <span className="hidden sm:inline">Select All</span>
+                          <span className="sm:hidden">All</span>
+                        </button>
+                        <button
+                          onClick={deselectAllTags}
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                        >
+                          <Square className="w-4 h-4" />
+                          <span className="hidden sm:inline">Deselect All</span>
+                          <span className="sm:hidden">None</span>
+                        </button>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                          {/* Format Toggle */}
+                          <div className="flex items-center gap-2 sm:gap-4 text-sm">
+                            <span className="text-gray-600 whitespace-nowrap">Copy as:</span>
+                            <div className="flex gap-2 flex-wrap">
+                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm">
+                                <input
+                                  type="radio"
+                                  name="copyFormat"
+                                  checked={copyFormat === 'rich'}
+                                  onChange={() => setCopyFormat('rich')}
+                                  className="text-blue-600"
+                                />
+                                Rich
+                              </label>
+                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm">
+                                <input
+                                  type="radio"
+                                  name="copyFormat"
+                                  checked={copyFormat === 'whatsapp'}
+                                  onChange={() => setCopyFormat('whatsapp')}
+                                  className="text-blue-600"
+                                />
+                                WhatsApp
+                              </label>
+                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm">
+                                <input
+                                  type="radio"
+                                  name="copyFormat"
+                                  checked={copyFormat === 'plain'}
+                                  onChange={() => setCopyFormat('plain')}
+                                  className="text-blue-600"
+                                />
+                                Plain
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
                           <div className="flex gap-2">
-                            <label className="flex items-center gap-1 cursor-pointer">
-                              <input
-                                type="radio"
-                                name="copyFormat"
-                                checked={copyFormat === 'rich'}
-                                onChange={() => setCopyFormat('rich')}
-                                className="text-blue-600"
-                              />
-                              Rich Text
-                            </label>
-                            <label className="flex items-center gap-1 cursor-pointer">
-                              <input
-                                type="radio"
-                                name="copyFormat"
-                                checked={copyFormat === 'whatsapp'}
-                                onChange={() => setCopyFormat('whatsapp')}
-                                className="text-blue-600"
-                              />
-                              WhatsApp
-                            </label>
-                            <label className="flex items-center gap-1 cursor-pointer">
-                              <input
-                                type="radio"
-                                name="copyFormat"
-                                checked={copyFormat === 'plain'}
-                                onChange={() => setCopyFormat('plain')}
-                                className="text-blue-600"
-                              />
-                              Plain Text
-                            </label>
+                            <button
+                              onClick={copySelectedTags}
+                              disabled={selectedTags.size === 0}
+                              className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            >
+                              <Copy className="w-4 h-4" />
+                              <span className="hidden sm:inline">Copy ({selectedTags.size})</span>
+                              <span className="sm:hidden">Copy</span>
+                            </button>
+                            <button
+                              onClick={copyAllTags}
+                              disabled={tags.length === 0}
+                              className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                            >
+                              <Copy className="w-4 h-4" />
+                              <span className="hidden sm:inline">All ({tags.length})</span>
+                              <span className="sm:hidden">All</span>
+                            </button>
                           </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap gap-3">
-                          <button
-                            onClick={copySelectedTags}
-                            disabled={selectedTags.size === 0}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Copy className="w-4 h-4" />
-                            Copy Selected ({selectedTags.size})
-                          </button>
-                          <button
-                            onClick={copyAllTags}
-                            disabled={tags.length === 0}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Copy className="w-4 h-4" />
-                            Copy All ({tags.length})
-                          </button>
-                        </div>
                       </div>
-                      <button
-                        onClick={copySelectedTags}
-                        disabled={selectedTags.size === 0}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Copy Selected ({selectedTags.size})
-                      </button>
-                      <button
-                        onClick={copyAllTags}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-800 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Copy All
-                      </button>
                     </div>
                     
                     {copySuccess && (
@@ -751,7 +752,7 @@ export const MainDemo: React.FC = () => {
               {!loading && tags.length === 0 && !error && (
               <div className="text-center py-20">
               <div className="relative mb-6">
-                <div className="relative bg-slate-900 p-6 rounded-full mx-auto w-fit">
+                <div className="relative  p-6 rounded-full mx-auto w-fit">
                   <img 
                     src="/logos/smartagx2.png" 
                     alt="SmartTagX Logo" 
@@ -767,12 +768,12 @@ export const MainDemo: React.FC = () => {
             </div>
 
             {/* Tag Legend */}
-            <div className="bg-slate-50 rounded-3xl shadow-xl p-8 border border-slate-200">
+            <div className="bg-slate-50 rounded-3xl shadow-xl p-6 sm:p-8 border border-slate-200">
               <div className="flex items-center space-x-3 mb-4">
-                <Sparkles className="w-7 h-7 text-slate-700" />
-                <h3 className="text-xl font-bold text-gray-900">SmartTagX Categories</h3>
+                <Sparkles className="w-6 sm:w-7 h-6 sm:h-7 text-slate-700" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">SmartTagX Categories</h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm mb-4">
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
                   <span className="text-slate-800 font-bold">🎯 ::Topic/</span>
                   <span className="text-gray-700">Main subjects & themes</span>

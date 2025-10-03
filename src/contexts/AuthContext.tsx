@@ -41,6 +41,8 @@ interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
   clearError: () => void;
   refreshUser: () => Promise<void>;
+  resendVerification: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 type AuthAction =
@@ -118,7 +120,6 @@ export const useAuth = () => {
 interface AuthProviderProps {
   children: ReactNode;
 }
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
@@ -154,15 +155,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.login({ email, password });
       const user = response?.data?.user || response?.data?.data?.user || response?.user;
       const tokens = response?.data?.tokens || response?.data?.data?.tokens || response?.tokens;
+
+      // Prevent unverified users from accessing the app
+      if (user && !user.isEmailVerified) {
+        dispatch({ type: 'AUTH_FAILURE', payload: 'Please verify your email before signing in. Check your inbox and spam folder for the verification email.' });
+        return;
+      }
+
       if (tokens?.accessToken) localStorage.setItem('accessToken', tokens.accessToken);
       if (tokens?.refreshToken) localStorage.setItem('refreshToken', tokens.refreshToken);
+
       if (user) {
         dispatch({ type: 'AUTH_SUCCESS', payload: user });
       } else {
         throw new Error('Invalid login response');
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Login failed';
+      const errorMessage = error.response?.data?.message || 
+                          (error.response?.status === 401 ? 'Invalid email or password' : 
+                           error.response?.status === 403 ? 'Account is locked. Please contact support.' : 
+                           'Login failed. Please try again.');
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
       throw error;
     }
@@ -174,15 +186,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.register({ name, email, password });
       const user = response?.data?.user || response?.data?.data?.user || response?.user;
       const tokens = response?.data?.tokens || response?.data?.data?.tokens || response?.tokens;
+
+      // For registration, we don't auto-login
+      // Instead, we show a success message that email verification is required
+      if (user) {
+        // Don't dispatch AUTH_SUCCESS to prevent auto-login
+        // Just store the user email for verification purposes
+        localStorage.setItem('pendingVerificationEmail', email);
+        return;
+      }
+
       if (tokens?.accessToken) localStorage.setItem('accessToken', tokens.accessToken);
       if (tokens?.refreshToken) localStorage.setItem('refreshToken', tokens.refreshToken);
+
       if (user) {
         dispatch({ type: 'AUTH_SUCCESS', payload: user });
       } else {
         throw new Error('Invalid registration response');
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
+      const errorMessage = error.response?.data?.message || 
+                          (error.response?.status === 400 && error.response?.data?.errors ? 
+                           error.response?.data?.errors[0]?.msg || 'Invalid registration data' : 
+                           'Registration failed. Please try again.');
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
       throw error;
     }
@@ -200,6 +226,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const resendVerification = async () => {
+    try {
+      await authApi.resendVerification(state.user?.email || '');
+    } catch (error) {
+      console.error('Failed to resend verification email:', error);
+    }
+  };
+
   const clearError = () => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
@@ -214,6 +248,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    dispatch({ type: 'AUTH_START' });
+    try {
+      await authApi.changePassword(currentPassword, newPassword);
+      dispatch({ type: 'CLEAR_ERROR' });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to change password';
+      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
+      throw error;
+    }
+  };
+
   const value: AuthContextType = {
     ...state,
     login,
@@ -221,6 +267,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     clearError,
     refreshUser,
+    resendVerification,
+    changePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

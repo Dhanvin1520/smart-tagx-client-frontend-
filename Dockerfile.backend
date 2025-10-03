@@ -14,17 +14,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only necessary files
-COPY public_api.py .
-COPY public_api_requirements.txt requirements.txt
-
-# Install Python dependencies
+# Install Python dependencies (use backend requirements)
+COPY backend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     python -m spacy download en_core_web_sm
+
+# Copy backend code
+COPY backend/ ./backend/
+
+# Set working directory to backend
+WORKDIR /app/backend
 
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "public_api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

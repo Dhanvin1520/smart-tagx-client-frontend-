@@ -8,11 +8,11 @@ export const Footer = () => {
           
           {/* Logo Section */}
           <div className="flex flex-col items-center md:items-start space-y-2">
-            <img 
-              src="/logos/Smarttagx.png" 
-              alt="SmartTagX Logo" 
-              className="h-16 w-auto object-contain" 
-            />
+          <img 
+  src="/logos/Smarttagx.png" 
+  alt="SmartTagX Logo" 
+  className="h-16 w-auto object-contain bg-white/90 rounded-lg p-2 drop-shadow-md"
+/>
             <p className="text-sm text-white/80 text-center md:text-left">
               The Future of Intelligent Content Tagging
             </p>
@@ -44,17 +44,30 @@ export const Footer = () => {
         </div>
         
         {/* Footer Bottom */}
-        <div className="border-t border-primary-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-  <div className="text-white/80 text-sm">
-    © {new Date().getFullYear()} SmartTagX. All rights reserved.
-  </div>
-  <div className="flex items-center space-x-2 text-white/80 text-sm">
-    <span>Powered by</span>
-    <a href="https://thoughtiv.com" target="_blank" rel="noopener noreferrer">
-      <img src="/logos/Thoughtiv.png" alt="Thoughtiv Logo" className="h-8 w-auto object-contain" />
-    </a>
-  </div>
-</div>
+        <div className="border-t border-primary-800 mt-8 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-white/80 text-sm">
+              © {new Date().getFullYear()} SmartTagX. All rights reserved.
+            </div>
+
+            {/* Legal Links */}
+            <div className="flex items-center space-x-6 text-sm">
+              <a href="/terms" className="text-white/80 hover:text-white transition-colors">
+                Terms & Conditions
+              </a>
+              <a href="/privacy" className="text-white/80 hover:text-white transition-colors">
+                Privacy Policy
+              </a>
+            </div>
+
+            <div className="flex items-center space-x-2 text-white/80 text-sm">
+              <span>Powered by</span>
+              <a href="https://thoughtiv.com" target="_blank" rel="noopener noreferrer">
+                <img src="/logos/Thoughtiv.png" alt="Thoughtiv Logo" className="h-8 w-auto object-contain" />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

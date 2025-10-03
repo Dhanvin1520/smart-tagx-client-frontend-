@@ -2,6 +2,16 @@ import axios from 'axios';
 
 const AUTH_API_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001';
 
+// Public axios instance for login/register endpoints (no auth header)
+const publicAuthClient = axios.create({
+  baseURL: AUTH_API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Authenticated axios instance for protected endpoints
 const authClient = axios.create({
   baseURL: AUTH_API_BASE_URL,
   timeout: 10000,
@@ -10,7 +20,7 @@ const authClient = axios.create({
   },
 });
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token for protected endpoints
 authClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -36,7 +46,7 @@ authClient.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const response = await authClient.post('/api/auth/refresh', {
+          const response = await publicAuthClient.post('/api/auth/refresh', {
             refreshToken,
           });
 
@@ -61,33 +71,57 @@ authClient.interceptors.response.use(
 
 // Auth API functions
 export const authApi = {
-  // Register user
+  // Register user (public endpoint)
   register: async (userData: { name: string; email: string; password: string }) => {
-    const response = await authClient.post('/api/auth/register', userData);
+    const response = await publicAuthClient.post('/api/auth/register', userData);
     return response.data;
   },
 
-  // Login user
+  // Login user (public endpoint)
   login: async (credentials: { email: string; password: string }) => {
-    const response = await authClient.post('/api/auth/login', credentials);
+    const response = await publicAuthClient.post('/api/auth/login', credentials);
     return response.data;
   },
 
-  // Get current user
+  // Get current user (protected endpoint)
   getMe: async () => {
     const response = await authClient.get('/api/auth/me');
     return response.data;
   },
 
-  // Logout user
+  // Logout user (protected endpoint)
   logout: async () => {
     const response = await authClient.post('/api/auth/logout');
     return response.data;
   },
 
-  // Refresh token
+  // Refresh token (public endpoint)
   refreshToken: async (refreshToken: string) => {
-    const response = await authClient.post('/api/auth/refresh', { refreshToken });
+    const response = await publicAuthClient.post('/api/auth/refresh', { refreshToken });
+    return response.data;
+  },
+
+  // Verify email (public endpoint)
+  verifyEmail: async (token: string) => {
+    const response = await publicAuthClient.post('/api/auth/verify-email', { token });
+    return response.data;
+  },
+
+  // Change password (protected endpoint)
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    const response = await authClient.post('/api/auth/change-password', { currentPassword, newPassword });
+    return response.data;
+  },
+
+  // Resend email verification (public endpoint)
+  resendVerification: async (email: string) => {
+    const response = await publicAuthClient.post('/api/auth/resend-verification', { email });
+    return response.data;
+  },
+
+  // Reset password (public endpoint)
+  resetPassword: async (token: string, password: string) => {
+    const response = await publicAuthClient.post('/api/auth/reset-password', { token, password });
     return response.data;
   },
 };

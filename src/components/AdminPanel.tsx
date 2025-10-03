@@ -26,6 +26,11 @@ const AdminPanel: React.FC = () => {
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Plans state
+  const [plans, setPlans] = useState<any[]>([]);
+  const [editingPlan, setEditingPlan] = useState<any | null>(null);
+  const [savingPlan, setSavingPlan] = useState(false);
+  const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
 
   const loadUsers = async () => {
     try {
@@ -40,8 +45,23 @@ const AdminPanel: React.FC = () => {
     }
   };
 
+  const authBase = (import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
+
+  const loadPlans = async () => {
+    try {
+      const res = await fetch(`${authBase}/api/admin/plans`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}` }
+      });
+      const json = await res.json();
+      if (json?.success) setPlans(json.data || []);
+    } catch (e) {
+      console.error('Failed to load plans', e);
+    }
+  };
+
   useEffect(() => {
     loadUsers();
+    loadPlans();
   }, []);
 
   const changePlan = async (id: string, plan: 'free' | 'plus' | 'pro') => {
@@ -148,6 +168,128 @@ const AdminPanel: React.FC = () => {
             </table>
           </div>
         </div>
+
+        {/* Plans management */}
+        <div className="mt-8 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between text-slate-700">
+            <div className="font-medium">Plans ({plans.length})</div>
+            <button
+              onClick={() => setEditingPlan({ name: '', code: '', description: '', currency: 'inr', amount: 0, interval: 'month', monthlyRequests: 20, features: [], isActive: true, sortOrder: plans.length })}
+              className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm"
+            >
+              New Plan
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-slate-50 text-left text-slate-600 text-sm">
+                <tr>
+                  <th className="p-3">Name</th>
+                  <th className="p-3">Code</th>
+                  <th className="p-3">Amount (₹)</th>
+                  <th className="p-3">Interval</th>
+                  <th className="p-3">Monthly Requests</th>
+                  <th className="p-3">Active</th>
+                  <th className="p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {plans.map((p) => (
+                  <tr key={p._id} className="text-sm">
+                    <td className="p-3">{p.name}</td>
+                    <td className="p-3">{p.code}</td>
+                    <td className="p-3">{p.amount}</td>
+                    <td className="p-3">{p.interval}</td>
+                    <td className="p-3">{p.monthlyRequests === -1 ? 'Unlimited' : p.monthlyRequests}</td>
+                    <td className="p-3">{p.isActive ? 'Yes' : 'No'}</td>
+                    <td className="p-3 flex gap-2">
+                      <button className="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200" onClick={() => setEditingPlan(p)}>Edit</button>
+                      <button
+                        className="px-2 py-1 rounded bg-red-100 hover:bg-red-200 text-red-700 disabled:opacity-50"
+                        onClick={async () => {
+                          if (!confirm('Delete this plan?')) return;
+                          try {
+                            setDeletingPlanId(p._id);
+                            await fetch(`${authBase}/api/admin/plans/${p._id}`, {
+                              method: 'DELETE',
+                              headers: { Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}` }
+                            });
+                            await loadPlans();
+                          } finally {
+                            setDeletingPlanId(null);
+                          }
+                        }}
+                        disabled={deletingPlanId === p._id}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {plans.length === 0 && (
+                  <tr>
+                    <td className="p-6 text-center text-slate-500" colSpan={7}>No plans yet. Click "New Plan" to create one.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {editingPlan && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6">
+              <div className="text-lg font-semibold mb-4">{editingPlan._id ? 'Edit Plan' : 'Create Plan'}</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input className="border p-2 rounded" placeholder="Name" value={editingPlan.name} onChange={(e) => setEditingPlan({ ...editingPlan, name: e.target.value })} />
+                <input className="border p-2 rounded" placeholder="Code (free/plus/pro)" value={editingPlan.code} onChange={(e) => setEditingPlan({ ...editingPlan, code: e.target.value.toLowerCase() })} />
+                <input className="border p-2 rounded" placeholder="Amount (INR)" type="number" value={editingPlan.amount} onChange={(e) => setEditingPlan({ ...editingPlan, amount: Number(e.target.value) })} />
+                <select className="border p-2 rounded" value={editingPlan.interval} onChange={(e) => setEditingPlan({ ...editingPlan, interval: e.target.value })}>
+                  <option value="month">month</option>
+                  <option value="year">year</option>
+                </select>
+                <input className="border p-2 rounded" placeholder="Monthly Requests (-1 for unlimited)" type="number" value={editingPlan.monthlyRequests} onChange={(e) => setEditingPlan({ ...editingPlan, monthlyRequests: Number(e.target.value) })} />
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={!!editingPlan.isActive} onChange={(e) => setEditingPlan({ ...editingPlan, isActive: e.target.checked })} />
+                  <span>Active</span>
+                </label>
+                <textarea className="border p-2 rounded md:col-span-2" placeholder="Description (optional)" value={editingPlan.description || ''} onChange={(e) => setEditingPlan({ ...editingPlan, description: e.target.value })} />
+              </div>
+              <div className="mt-6 flex justify-end gap-2">
+                <button className="px-4 py-2 rounded bg-slate-100" onClick={() => setEditingPlan(null)}>Cancel</button>
+                <button
+                  className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                  disabled={savingPlan}
+                  onClick={async () => {
+                    try {
+                      setSavingPlan(true);
+                      const method = editingPlan._id ? 'PATCH' : 'POST';
+                      const url = editingPlan._id ? `${authBase}/api/admin/plans/${editingPlan._id}` : `${authBase}/api/admin/plans`;
+                      const res = await fetch(url, {
+                        method,
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`
+                        },
+                        body: JSON.stringify(editingPlan)
+                      });
+                      const data = await res.json();
+                      if (!data?.success) throw new Error(data?.message || 'Failed to save plan');
+                      await loadPlans();
+                      setEditingPlan(null);
+                    } catch (e: any) {
+                      alert(e?.message || 'Failed to save plan');
+                    } finally {
+                      setSavingPlan(false);
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 text-xs text-slate-500">Only admins can access this page.</div>
       </div>

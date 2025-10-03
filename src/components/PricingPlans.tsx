@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Check, Star, Zap, Crown, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -6,56 +6,77 @@ const PricingPlans = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const plans = [
-    {
-      name: 'Free',
-      price: 0,
-      period: 'forever',
-      icon: <Zap className="w-6 h-6" />,
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-100',
-      borderColor: 'border-gray-200',
-      buttonColor: 'bg-gray-600 hover:bg-gray-700',
-      popular: false,
-      limits: {
-        tags: 20,
-        requests: '20 tags/month',
-        features: ['Basic tag generation', 'Standard accuracy', 'Email support']
+  const [plans, setPlans] = useState<any[]>([]);
+  const [fetching, setFetching] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<string>('');
+
+  const AUTH_BASE = (import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        setFetching(true);
+        setFetchError('');
+        const res = await fetch(`${AUTH_BASE}/api/payments/plans`, { cache: 'no-store' as RequestCache });
+        const data = await res.json();
+        if (!res.ok || data?.success === false) {
+          throw new Error(data?.message || `Failed to load plans (${res.status})`);
+        }
+        const uiByCode: Record<string, any> = {
+          free: {
+            icon: <Zap className="w-6 h-6" />,
+            color: 'text-gray-600',
+            bgColor: 'bg-gray-100',
+            borderColor: 'border-gray-200',
+            buttonColor: 'bg-gray-600 hover:bg-gray-700'
+          },
+          plus: {
+            icon: <Star className="w-6 h-6" />,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-100',
+            borderColor: 'border-blue-200',
+            buttonColor: 'bg-blue-600 hover:bg-blue-700'
+          },
+          pro: {
+            icon: <Crown className="w-6 h-6" />,
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-100',
+            borderColor: 'border-purple-200',
+            buttonColor: 'bg-purple-600 hover:bg-purple-700'
+          }
+        };
+
+        const mapped = (data?.data || []).map((p: any) => {
+          const code = (p.code || '').toLowerCase();
+          const ui = uiByCode[code] || uiByCode['free'];
+          return {
+            name: p.name,
+            price: p.amount,
+            period: p.interval,
+            code,
+            popular: code === 'plus',
+            limits: {
+              tags: p.monthlyRequests,
+              requests: p.monthlyRequests === -1 ? 'Unlimited' : `${p.monthlyRequests} tags/month`,
+              features: p.features?.length ? p.features : []
+            },
+            description: p.description || '',
+            ...ui
+          };
+        });
+        // Sort by code priority or server sort if present
+        const order = { free: 0, plus: 1, pro: 2 } as any;
+        mapped.sort((a: any, b: any) => (order[a.code] ?? 99) - (order[b.code] ?? 99));
+        setPlans(mapped);
+      } catch (e: any) {
+        console.error('Failed to load plans', e);
+        setFetchError(e?.message || 'Failed to load plans');
+      } finally {
+        setFetching(false);
       }
-    },
-    {
-      name: 'Plus',
-      price: 9.99,
-      period: 'month',
-      icon: <Star className="w-6 h-6" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
-      borderColor: 'border-blue-200',
-      buttonColor: 'bg-blue-600 hover:bg-blue-700',
-      popular: true,
-      limits: {
-        tags: 150,
-        requests: '150 tags/month',
-        features: ['Advanced tag generation', 'Higher accuracy', 'Priority support', 'Bulk processing']
-      }
-    },
-    {
-      name: 'Pro',
-      price: 29.99,
-      period: 'month',
-      icon: <Crown className="w-6 h-6" />,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
-      borderColor: 'border-purple-200',
-      buttonColor: 'bg-purple-600 hover:bg-purple-700',
-      popular: false,
-      limits: {
-        tags: -1,
-        requests: 'Unlimited',
-        features: ['Unlimited tag generation', 'Highest accuracy', 'API access', 'Custom models', 'Priority support', 'Bulk processing']
-      }
-    }
-  ];
+    };
+    loadPlans();
+  }, []);
 
   const handleUpgrade = async (planName: string) => {
     if (!user) {
@@ -70,10 +91,24 @@ const PricingPlans = () => {
     setIsLoading(planName);
     
     try {
-      // Here you would integrate with Stripe
-      console.log(`Upgrading to ${planName} plan`);
-      // For now, just show a message
-      alert(`Upgrade to ${planName} plan - Stripe integration coming soon!`);
+      const res = await fetch(`${AUTH_BASE}/api/payments/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`
+        },
+        body: JSON.stringify({
+          plan: planName.toLowerCase(),
+          successUrl: window.location.origin + '/?checkout=success',
+          cancelUrl: window.location.origin + '/pricing?checkout=cancel'
+        })
+      });
+      const data = await res.json();
+      if (data?.success && data?.data?.url) {
+        window.location.href = data.data.url;
+      } else {
+        throw new Error(data?.message || 'Failed to start checkout');
+      }
     } catch (error) {
       console.error('Upgrade error:', error);
     } finally {
@@ -97,7 +132,7 @@ const PricingPlans = () => {
             Choose Your Plan
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Select the perfect plan for your tag generation needs. Upgrade or downgrade at any time.
+            Select the perfect plan for your tag generation needs. 
           </p>
         </div>
 
@@ -112,24 +147,45 @@ const PricingPlans = () => {
                 <div>
                   <h3 className="font-semibold text-gray-900">Current Plan: {currentPlan.name}</h3>
                   <p className="text-sm text-gray-600">
-                    {currentPlan.limits.requests} • ${currentPlan.price}/{currentPlan.period}
+                    {currentPlan.limits.requests} • ₹{currentPlan.price}/{currentPlan.period}
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-600">
-                  {user.apiUsage.requestsThisMonth} / {user.apiUsage.monthlyLimit} tags used this month
+                  {user.subscription.plan === 'pro'
+                    ? 'Unlimited usage'
+                    : `${user.apiUsage.requestsThisMonth} / ${user.apiUsage.monthlyLimit === -1 ? '∞' : user.apiUsage.monthlyLimit} tags used this month`
+                  }
                 </p>
                 <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{
-                      width: `${Math.min((user.apiUsage.requestsThisMonth / user.apiUsage.monthlyLimit) * 100, 100)}%`
+                      width: `${user.subscription.plan === 'pro' ? '0' : Math.min((user.apiUsage.requestsThisMonth / user.apiUsage.monthlyLimit) * 100, 100)}%`
                     }}
                   />
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Empty/Loading/Error states */}
+        {fetching && (
+          <div className="text-center text-gray-600 py-12">Loading plans…</div>
+        )}
+        {!fetching && fetchError && (
+          <div className="text-center text-red-600 py-6">
+            {fetchError}
+            <div className="mt-4">
+              <button onClick={() => window.location.reload()} className="px-4 py-2 bg-gray-800 text-white rounded">Retry</button>
+            </div>
+          </div>
+        )}
+        {!fetching && !fetchError && plans.length === 0 && (
+          <div className="text-center text-gray-600 py-12">
+            No plans available yet. Please check back later.
           </div>
         )}
 
@@ -170,15 +226,18 @@ const PricingPlans = () => {
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                     <div className="mb-4">
-                      <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                      <span className="text-4xl font-bold text-gray-900">{plan.price === 0 ? '₹0' : `₹${plan.price}`}</span>
                       <span className="text-gray-600">/{plan.period}</span>
                     </div>
-                    <p className="text-gray-600">{plan.limits.requests}</p>
+                    <p className="text-gray-600 mb-2">{plan.limits.requests}</p>
+                    {plan.description && (
+                      <p className="text-sm text-gray-500 italic">{plan.description}</p>
+                    )}
                   </div>
 
                   {/* Features */}
                   <ul className="space-y-3 mb-8">
-                    {plan.limits.features.map((feature, index) => (
+                    {plan.limits.features.map((feature: string, index: number) => (
                       <li key={index} className="flex items-center">
                         <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                         <span className="text-gray-700">{feature}</span>
@@ -217,30 +276,6 @@ const PricingPlans = () => {
           })}
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-16">
-          <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-            Frequently Asked Questions
-          </h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Can I change plans anytime?</h4>
-              <p className="text-gray-600">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">What happens to unused tags?</h4>
-              <p className="text-gray-600">Unused tags don't roll over to the next month. Your limit resets each billing cycle.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Is there a free trial?</h4>
-              <p className="text-gray-600">Yes! The Free plan gives you 20 tags per month to try our service.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Can I cancel anytime?</h4>
-              <p className="text-gray-600">Absolutely. You can cancel your subscription at any time with no cancellation fees.</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

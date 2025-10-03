@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hash, Sparkles, X, CheckCircle } from 'lucide-react';
+import { Hash, X, CheckCircle } from 'lucide-react';
 
 export const FeatureComparison: React.FC = () => {
   return (
@@ -7,8 +7,10 @@ export const FeatureComparison: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Hashtags vs SmartTagX
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            See how SmartTagX revolutionizes content tagging compared to traditional hashtags
           </p>
         </div>
         
@@ -299,24 +301,6 @@ export const FeatureComparison: React.FC = () => {
               or social media, SmartTagX ensures every post, page, and message is intelligently
               connected and discoverable.
             </p>
-          </div>
-        </div>
-        
-        {/* Stats */}
-        <div className="mt-16 grid md:grid-cols-3 gap-8 text-center">
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-red-600 mb-2">87%</div>
-            <p className="text-gray-600">of hashtags are irrelevant spam</p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-orange-600 mb-2">2.3s</div>
-            <p className="text-gray-600">average time wasted reading hashtag clutter</p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-green-600 mb-2">85%</div>
-            <p className="text-gray-600">accuracy with SmartTagX AI tagging</p>
           </div>
         </div>
       </div>
