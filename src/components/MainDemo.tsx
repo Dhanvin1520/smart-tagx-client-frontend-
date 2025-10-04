@@ -360,7 +360,7 @@ export const MainDemo: React.FC = () => {
   };
   const exampleTexts = [
     "Thoughtiv,a cutting-edge software development and digital transformation agency based in India, empowering businesses across industries. We focus on delivering measurable value, transforming ideas into successful solutions that drive growth and enhance efficiency. Our expertise spans website and software development, mobile app solutions, and end-to-end digital transformation services. Visit us at our head office in Hyderabad. Other offices: London, United Kingdom | New Jersey, USA.",
-    "SmartTagX AI makes your content smarter. It automatically adds relevant and powerful tags, keeping everything organized and easy to explore — so you can always find what matters most, instantly. For queries, contact Support@smarttagx.com, Hyderabad."
+    "SmartTagX AI makes your content smarter. It automatically adds relevant and powerful tags, keeping everything organized and easy to explore — so you can always find what matters most, instantly. For queries smarttagx@gmail.com Hyderabad."
   ];
 
   return (
