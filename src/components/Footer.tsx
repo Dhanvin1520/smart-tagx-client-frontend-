@@ -38,7 +38,7 @@ export const Footer = () => {
               </div>
             </div>
             <div className="text-white/80">
-              <p>Email: Support@Smarttagx.com</p>
+              <p>Email: smarttagx@gmail.com</p>
             </div>
           </div>
         </div>

@@ -107,7 +107,7 @@ export const FeaturesSection = () => {
           </div>
           <h4 className="text-xl font-semibold text-secondary-900 mb-4">Add Content</h4>
           <p className="text-secondary-600">
-            Paste text, upload documents, or connect your sources. Multiple formats supported.
+            add your content to the text box.
           </p>
         </div>
         <div className="text-center">

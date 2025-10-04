@@ -25,7 +25,7 @@ export const ContactSection = () => {
               </div>
               <div>
                 <h4 className="text-secondary-900 font-semibold mb-1">Email</h4>
-                <p className="text-secondary-700">Support@smarttagx.com</p>
+                <p className="text-secondary-700">smarttagx@gmail.com</p>
                 <p className="text-secondary-500 text-sm">We'll respond within 24 hours</p>
               </div>
             </div>

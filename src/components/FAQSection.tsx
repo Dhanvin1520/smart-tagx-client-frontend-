@@ -19,7 +19,7 @@ export const FAQSection = () => {
     },
     {
       question: "Does SmartTagX AI currently work on social media platforms?",
-      answer: "Not yet. Currently, SmartTagX AI is designed for websites, applications, and content systems. However, social media platforms will soon be able to implement SmartTagX AI for smarter tagging and better content discovery.  We’re actively driving adoption and advancing development for this next phase."
+      answer: "Not yet. Currently, SmartTagX AI is designed for websites, applications, and content systems. However, social media platforms will soon be able to implement SmartTagX AI for smarter tagging and better content discovery.  “We’re actively driving adoption and accelerating development in this next phase. Integration across social media platforms is underway and may take some time as they adapt to our innovative system.”"
     },
     {
       question: "Does SmartTagX AI support regional or local languages?",

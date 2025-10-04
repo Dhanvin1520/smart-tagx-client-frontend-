@@ -24,7 +24,7 @@ export const MainDemo: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [copySuccess, setCopySuccess] = useState('');
-  const [copyFormat, setCopyFormat] = useState<'rich' | 'plain' | 'whatsapp'>('rich');
+  const [copyFormat, setCopyFormat] = useState<'rich' | 'plain'>('rich');
 
   // Backend API configuration (normalize trailing slashes)
   const RAW_API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -232,15 +232,7 @@ export const MainDemo: React.FC = () => {
     if (copyFormat === 'plain') {
       // Each tag on a new line for plain text
       await navigator.clipboard.writeText(selected.join('\n'));
-      setCopySuccess('Copied as plain text!');
-    } else if (copyFormat === 'whatsapp') {
-      // Each tag on a new line for WhatsApp
-      const whatsappText = selected.map(tag => {
-        const url = tagLinks[tag];
-        return url ? `${tag}\n${url}` : tag;
-      }).join('\n');
-      await navigator.clipboard.writeText(whatsappText);
-      setCopySuccess('Copied in WhatsApp format!');
+      setCopySuccess(`Copied ${selected.length} tags as plain text!`);
     } else {
       // Rich text format - each tag on a new line
       const plain = selected.join('\n');
@@ -254,9 +246,10 @@ export const MainDemo: React.FC = () => {
         })
         .join('\n');
       await copyWithHtmlFallback(plain, html);
+      setCopySuccess(`${selected.length} tags copied as rich text!`);
     }
     
-    setTimeout(() => setCopySuccess(''), 2000);
+    setTimeout(() => setCopySuccess(''), 3000);
   };
 
   
@@ -265,15 +258,7 @@ export const MainDemo: React.FC = () => {
     if (copyFormat === 'plain') {
       // Each tag on a new line for plain text
       await navigator.clipboard.writeText(tags.join('\n'));
-      setCopySuccess('Copied as plain text!');
-    } else if (copyFormat === 'whatsapp') {
-      // Each tag on a new line for WhatsApp with URLs on new lines
-      const whatsappText = tags.map(tag => {
-        const url = tagLinks[tag];
-        return url ? `${tag}\n${url}` : tag;
-      }).join('\n\n');
-      await navigator.clipboard.writeText(whatsappText);
-      setCopySuccess('Copied in WhatsApp format!');
+      setCopySuccess(`Copied all ${tags.length} tags as plain text!`);
     } else {
       // Rich text format - each tag on a new line
       const plain = tags.join('\n');
@@ -287,9 +272,10 @@ export const MainDemo: React.FC = () => {
         })
         .join('\n');
       await copyWithHtmlFallback(plain, html);
+      setCopySuccess(`All ${tags.length} tags copied as rich text!`);
     }
     
-    setTimeout(() => setCopySuccess(''), 2000);
+    setTimeout(() => setCopySuccess(''), 3000);
   };
 
   // ----- Tag hyperlink helpers -----
@@ -373,8 +359,8 @@ export const MainDemo: React.FC = () => {
     }
   };
   const exampleTexts = [
-    "I'm excited to announce our new AI-powered healthcare solution launching in Mumbai next month. Dr. Priya Sharma from Google will be presenting the revolutionary treatment at the Bandra-Kurla Complex. Watch our demo video to learn more!",
-    "We are Thoughtiv. A cutting-edge software development and digital transformation agency based in India, empowering businesses across industries. We focus on delivering measurable value, transforming ideas into successful solutions that drive growth and enhance efficiency. Our expertise spans website and software development, mobile app solutions, and end-to-end digital transformation services. Visit us at head office: Hyderabad. Our Other Offices: London, United Kingdom | New Jersey, USA"
+    "Thoughtiv,a cutting-edge software development and digital transformation agency based in India, empowering businesses across industries. We focus on delivering measurable value, transforming ideas into successful solutions that drive growth and enhance efficiency. Our expertise spans website and software development, mobile app solutions, and end-to-end digital transformation services. Visit us at our head office in Hyderabad. Other offices: London, United Kingdom | New Jersey, USA.",
+    "SmartTagX AI makes your content smarter. It automatically adds relevant and powerful tags, keeping everything organized and easy to explore — so you can always find what matters most, instantly. For queries, contact Support@smarttagx.com, Hyderabad."
   ];
 
   return (
@@ -625,20 +611,38 @@ export const MainDemo: React.FC = () => {
                   <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                       <div className="flex flex-wrap items-center gap-3">
-                        <button
-                          onClick={selectAllTags}
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium flex items-center gap-1.5"
-                        >
-                          <CheckSquare className="w-4 h-4" />
-                          <span>Select All</span>
-                        </button>
-                        <button
-                          onClick={deselectAllTags}
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium flex items-center gap-1.5"
-                        >
-                          <Square className="w-4 h-4" />
-                          <span>Deselect All</span>
-                        </button>
+                        {(() => {
+                          const allSelected = tags.length > 0 && selectedTags.size === tags.length;
+                          const noneSelected = selectedTags.size === 0;
+
+                          return (
+                            <>
+                              <button
+                                onClick={selectAllTags}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all duration-200 border ${
+                                  allSelected
+                                    ? 'bg-green-100 hover:bg-green-200 text-green-700 border-green-300'
+                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
+                                }`}
+                              >
+                                <CheckSquare className={`w-4 h-4 ${allSelected ? 'text-green-600' : ''}`} />
+                                <span>{allSelected ? 'All Selected' : 'Select All'}</span>
+                              </button>
+                              <button
+                                onClick={deselectAllTags}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all duration-200 border ${
+                                  noneSelected
+                                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-300'
+                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 hover:bg-red-50 hover:text-red-600 border-slate-300'
+                                }`}
+                                disabled={noneSelected}
+                              >
+                                <Square className={`w-4 h-4 ${noneSelected ? 'text-gray-400' : ''}`} />
+                                <span>{noneSelected ? 'None Selected' : 'Deselect All'}</span>
+                              </button>
+                            </>
+                          );
+                        })()}
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -656,16 +660,6 @@ export const MainDemo: React.FC = () => {
                                   className="text-blue-600"
                                 />
                                 Rich
-                              </label>
-                              <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg">
-                                <input
-                                  type="radio"
-                                  name="copyFormat"
-                                  checked={copyFormat === 'whatsapp'}
-                                  onChange={() => setCopyFormat('whatsapp')}
-                                  className="text-blue-600"
-                                />
-                                WhatsApp
                               </label>
                               <label className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg">
                                 <input
@@ -704,8 +698,11 @@ export const MainDemo: React.FC = () => {
                     </div>
                     
                     {copySuccess && (
-                      <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-lg text-sm font-medium">
-                        {copySuccess}
+                      <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-lg text-sm font-medium animate-pulse">
+                        <div className="flex items-center space-x-2">
+                          <CheckSquare className="w-4 h-4" />
+                          <span>{copySuccess}</span>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -756,7 +753,7 @@ export const MainDemo: React.FC = () => {
                 </div>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-2">Ready to transform your content?</h4>
-              <p className="text-gray-600 mb-4">Enter some text above and click "Generate Tags"</p>
+              <p className="text-gray-600 mb-4">"Generated tags list"</p>
               <p className="text-sm text-gray-500">You can edit tags to better fit your needs</p>
             </div>
               )}
@@ -764,9 +761,11 @@ export const MainDemo: React.FC = () => {
 
             {/* Tag Legend */}
             <div className="bg-slate-50 rounded-3xl shadow-xl p-6 sm:p-8 border border-slate-200">
-              <div className="flex items-center space-x-3 mb-4">
-                <Sparkles className="w-6 sm:w-7 h-6 sm:h-7 text-slate-700" />
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900">SmartTagX Categories</h3>
+              <div className="flex items-center justify-center sm:justify-start space-x-3 mb-4">
+                <div className="flex items-center space-x-3">
+                  <img src="/logos/smartagx2.png" alt="SmartTagX" className="w-6 h-6 object-contain" />
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">SmartTagX Categories</h3>
+                </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm mb-4">
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
