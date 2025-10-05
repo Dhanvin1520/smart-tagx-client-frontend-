@@ -2,9 +2,21 @@ import React, { useState } from 'react';
 import { TagChip } from './TagChip';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
-import { usageApi } from '../services/authApi';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, FileText, Zap, Target, Globe, ArrowRight, Copy, CheckSquare, Square, AlertCircle, Star, Crown, User } from 'lucide-react';
+import { usageApi } from '../services/authApi';
+import { Sparkles, FileText, Zap, Target, Globe, ArrowRight, Copy, CheckSquare, Square, AlertCircle, Star, Crown, User, ChevronDown } from 'lucide-react';
+
+// Tag categories
+const TAG_CATEGORIES = [
+  { prefix: '::', description: 'Main topic & subject' },
+  { prefix: '@', description: 'People & personalities' },
+  { prefix: '/', description: 'Organizations & brands' },
+  { prefix: ':', description: 'Products & services' },
+  { prefix: '//', description: 'Locations & regions' },
+  { prefix: '!!', description: 'Emotions & sentiment' },
+  { prefix: '<', description: 'Content type' },
+  { prefix: '^', description: 'Short | Medium | Long' },
+];
 
 interface TagResponse {
   tags: string[];
@@ -25,6 +37,7 @@ export const MainDemo: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [copySuccess, setCopySuccess] = useState('');
   const [copyFormat, setCopyFormat] = useState<'rich' | 'plain'>('rich');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   // Backend API configuration (normalize trailing slashes)
   const RAW_API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -308,8 +321,14 @@ export const MainDemo: React.FC = () => {
   };
 
   const addCustomTag = () => {
-    const t = customTag.trim();
+    let t = customTag.trim();
     if (!t) return;
+    
+    // Add the selected category prefix if one is selected
+    if (selectedCategory) {
+      t = `${selectedCategory}${t}`;
+    }
+    
     if (!tags.includes(t)) {
       setTags([...tags, t]);
       // If base URL exists, set default link for new tag
@@ -724,19 +743,44 @@ export const MainDemo: React.FC = () => {
                       />
                     ))}
                   </div>
-                  <div className="mt-4 flex items-center gap-2">
-                    <input
-                      value={customTag}
-                      onChange={(e) => setCustomTag(e.target.value)}
-                      placeholder="Add custom tag (e.g., ::Topic/Web Development)"
-                      className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-                    />
-                    <button
-                      onClick={addCustomTag}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      Add Tag
-                    </button>
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <div className="flex">
+                          <div className="w-full">
+                            <select
+                              value={selectedCategory}
+                              onChange={(e) => setSelectedCategory(e.target.value)}
+                              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 appearance-none"
+                            >
+                              <option value="">Select a tag category</option>
+                              {TAG_CATEGORIES.map((category, index) => (
+                                <option key={index} value={category.prefix}>
+                                  {category.prefix} {category.description}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                              <ChevronDown className="h-5 w-5 text-gray-400" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={customTag}
+                        onChange={(e) => setCustomTag(e.target.value)}
+                        placeholder="select category above and add custom tag"
+                        className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+                      />
+                      <button
+                        onClick={addCustomTag}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        Add Tag
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -769,35 +813,35 @@ export const MainDemo: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm mb-4">
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">🎯 ::Topic/</span>
+                  <span className="text-slate-800 font-bold">::</span>
                   <span className="text-gray-700">Main subjects & themes</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">👤 @Person/</span>
+                  <span className="text-slate-800 font-bold">@</span>
                   <span className="text-gray-700">People & personalities</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">🏢 /Company/</span>
+                  <span className="text-slate-800 font-bold">/</span>
                   <span className="text-gray-700">Organizations & brands</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">📦 :Product/</span>
+                  <span className="text-slate-800 font-bold">:</span>
                   <span className="text-gray-700">Products & services</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">📍 //Location/</span>
+                  <span className="text-slate-800 font-bold">//</span>
                   <span className="text-gray-700">Places & regions</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">💭 !!Emotion/</span>
+                  <span className="text-slate-800 font-bold">!!</span>
                   <span className="text-gray-700">Emotions & sentiment</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">📄 &lt;Type/</span>
+                  <span className="text-slate-800 font-bold">&lt;</span>
                   <span className="text-gray-700">Content type</span>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-gray-700 font-bold">📏 ^Length/</span>
+                  <span className="text-gray-700 font-bold">^</span>
                   <span className="text-gray-700">Short | Medium | Long</span>
                 </div>
               </div>
