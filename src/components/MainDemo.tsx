@@ -812,39 +812,39 @@ export const MainDemo: React.FC = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm mb-4">
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">::</span>
-                  <span className="text-gray-700">Main subjects & themes</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">@</span>
-                  <span className="text-gray-700">People & personalities</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">/</span>
-                  <span className="text-gray-700">Organizations & brands</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">:</span>
-                  <span className="text-gray-700">Products & services</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">//</span>
-                  <span className="text-gray-700">Places & regions</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">!!</span>
-                  <span className="text-gray-700">Emotions & sentiment</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-slate-800 font-bold">&lt;</span>
-                  <span className="text-gray-700">Content type</span>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
-                  <span className="text-gray-700 font-bold">^</span>
-                  <span className="text-gray-700">Short | Medium | Long</span>
-                </div>
-              </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">📚 :: Topic</span>
+    <span className="text-gray-700">Main subjects & themes</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">🧑‍🤝‍🧑 @ Person</span>
+    <span className="text-gray-700">People & personalities</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">🏢 / Organization</span>
+    <span className="text-gray-700">Organizations & brands</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">🛍️ : Product</span>
+    <span className="text-gray-700">Products & services</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">🌍 // Location</span>
+    <span className="text-gray-700">Places & regions</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">💖 !! Emotion</span>
+    <span className="text-gray-700">Emotions & sentiment</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">📰 &lt; Type</span>
+    <span className="text-gray-700">Content type</span>
+  </div>
+  <div className="flex items-center space-x-3 p-3 bg-white rounded-xl">
+    <span className="text-slate-800 font-bold text-sm">⏱️ ^ Length</span>
+    <span className="text-gray-700">Short | Medium | Long</span>
+  </div>
+</div>
               <div className="bg-white/70 border border-slate-200 rounded-xl p-4 text-sm text-slate-700">
                 <p className="font-semibold mb-1">Disclaimer</p>
                 <p>
