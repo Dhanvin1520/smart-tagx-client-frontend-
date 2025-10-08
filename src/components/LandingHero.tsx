@@ -27,20 +27,14 @@ export const LandingHero = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-          <button
-            className="group bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center"
-            onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            Demo
-            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <button
-            className="bg-white/80 backdrop-blur-sm text-secondary-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white transition-all duration-300 border border-secondary-200 hover:border-secondary-300 shadow-sm hover:shadow-md"
-            onClick={() => window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')}
-          >
-            Watch Demo
-          </button>
-        </div>
+  <button
+    className="group bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center"
+    onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
+  >
+    Demo
+    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+  </button>
+</div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
