@@ -1,0 +1,10 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# 1️⃣ Force HTTPS for everyone
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+
+# 2️⃣ Redirect www → non-www
+RewriteCond %{HTTP_HOST} ^www\.smarttagx\.com [NC]
+RewriteRule ^(.*)$ https://smarttagx.com/$1 [L,R=301]
